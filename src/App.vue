@@ -1,9 +1,7 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <transition name="fade-transform" mode="out-in">
+    <router-view></router-view>
+  </transition>
 </template>
 
 <style lang="scss">
@@ -16,8 +14,8 @@
 }
 
 #nav {
-  padding: 30px;
-
+  width: 100vw;
+  height: 100vh;
   a {
     font-weight: bold;
     color: #2c3e50;
