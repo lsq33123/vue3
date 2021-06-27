@@ -14,15 +14,7 @@ const DEFAULTPOSITION = 'session' //默认存储位置
 //   expired?: number
 // }
 
-type IType =
-  | 'string'
-  | 'number'
-  | 'bigint'
-  | 'boolean'
-  | 'symbol'
-  | 'undefined'
-  | 'object'
-  | 'function'
+type IType = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function'
 type IStore = {
   dataType: IType
   content: any
@@ -32,12 +24,7 @@ type IStore = {
 }
 
 /**存数据  expired过期时间（分钟） */
-export const setStore = (
-  name: string,
-  content: any,
-  type: 'session' | 'local' = DEFAULTPOSITION,
-  expired?: number
-) => {
+export const setStore = (name: string, content: any, type: 'session' | 'local' = DEFAULTPOSITION, expired?: number) => {
   name = KEYNAME + name
   const obj: IStore = {
     dataType: typeof content,

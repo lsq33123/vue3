@@ -1,10 +1,5 @@
 <template>
-  <div class="header flex flex-between">
-    <div></div>
-    <div>
-      <el-button type="text">退出</el-button>
-    </div>
-  </div>
+  <div>444444444444444444</div>
 </template>
 
 <script>
@@ -25,10 +20,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.header {
-  height: 100%;
-  line-height: 60px;
-  border-bottom: 1px solid #eee;
-}
-</style>
+<style land="scss" scoped></style>

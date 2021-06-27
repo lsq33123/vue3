@@ -1,11 +1,11 @@
 <template>
   <el-container>
-    <el-aside width="200px">
-      <Aside />
+    <el-aside :width="isCollapse ? '64px' : '240px'" class="side-wrap">
+      <Aside v-model:isCollapse="isCollapse" />
     </el-aside>
     <el-container>
       <el-header><Header /></el-header>
-      <el-main><AppMain /></el-main>
+      <el-main class="main-wrap"><AppMain /></el-main>
     </el-container>
   </el-container>
 </template>
@@ -20,7 +20,7 @@ export default {
   components: { Aside, Header, AppMain },
   setup() {
     const state = reactive({
-      key1: 'value1',
+      isCollapse: false,
       key2: 'value2'
     })
 
@@ -31,4 +31,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.main-wrap {
+  padding: 0;
+  transition: all 0.5s ease;
+}
+</style>

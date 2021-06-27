@@ -3,7 +3,7 @@ import { getCookie } from '@/utils/cookie'
 
 export function createRouterGuards(router: Router) {
   router.beforeEach((to, from, next) => {
-    console.log('res:', to,from)
+    console.log('router.beforeEach:', to, from)
     const token = getCookie('token')
     if (to.path === '/login') {
       next()

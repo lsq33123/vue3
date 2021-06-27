@@ -33,7 +33,7 @@ export default {
       getToken({ username: state.username, password: state.password }).then((res) => {
         if (res.code === 0 && res.data) {
           setStore('user_name', state.username)
-          setCookie('token', 'Bearer ' + res.data.token)
+          setCookie('F-token', 'Bearer ' + res.data.token)
           router.replace('/')
           ElMessage.success('登录成功')
         } else {

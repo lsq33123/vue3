@@ -30,7 +30,8 @@ module.exports = {
     //   allowHigherOrderFunctions:false,
     //   allowedNames:['setup']
     // }],
-    'endOfLine': 0
+    'endOfLine': 0,
+    'max-len': 0
     // 'endOfLine': "auto"
     
   },
