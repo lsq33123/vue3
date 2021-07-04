@@ -4,8 +4,9 @@
       <Toolbar>
         <template #left>
           <div>
-            <el-input v-model="params.name" placeholder="请输入菜单名称" clearable class="input-width input-mrg-rg" style="width: 300px" />
-            <el-input v-model="params.code" placeholder="请输入菜单编码" clearable class="input-width input-mrg-rg" />
+            <el-input v-model="params.name" placeholder="请输入昵称" clearable class="input-width input-mrg-rg" />
+            <el-input v-model="params.code" placeholder="请输入账号" clearable class="input-width input-mrg-rg" />
+            <el-input v-model="params.code" placeholder="请输入手机号" clearable class="input-width input-mrg-rg" />
             <el-select v-model="params.visible" placeholder="请选择显示状态" clearable class="input-width input-mrg-rg">
               <el-option :value="0" label="显示">显示</el-option>
               <el-option :value="1" label="隐藏">隐藏</el-option>
@@ -19,8 +20,8 @@
               type="daterange"
               clearable
               range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              start-placeholder="登陆开始日期"
+              end-placeholder="登陆结束日期"
             >
             </el-date-picker>
             <el-button type="primary" @click="loadData" style="margin-left: 20px">查询</el-button>
@@ -31,24 +32,23 @@
     <template #center>
       <el-table :data="tableData" :height="height" row-key="id" :tree-props="{ children: 'children' }">
         <!-- <el-table-column type="index" label="序号" width="60px" /> -->
-        <el-table-column prop="name" label="菜单名称" min-width="100px" />
-        <el-table-column prop="code" label="菜单编码" min-width="100px" />
-        <el-table-column prop="icon" label="图标" min-width="120px">
+        <el-table-column prop="nick_name" label="昵称" min-width="100px" />
+        <el-table-column prop="user_name" label="账号" min-width="100px" />
+        <el-table-column prop="phonenumber" label="手机号" min-width="120px">
           <template v-slot="scope">
-            {{ 'antd ' + scope.row.icon }}
+            {{ formatMobile(scope.row.phonenumber) }}
           </template>
         </el-table-column>
-        <el-table-column prop="sort" label="排序" min-width="60px" />
-        <el-table-column prop="component" label="组件路径" min-width="100px" />
-        <el-table-column prop="visible" label="是否显示" min-width="70px">
+        <el-table-column prop="sex" label="性别" min-width="60px">
           <template v-slot="scope">
-            <!-- {{ scope.row.status === 1 ? '隐藏' : '显示' }} -->
-            <el-switch
-              v-model="scope.row.visible"
-              :active-value="0"
-              :inactive-value="1"
-              @change="(val) => onChangeVisible(scope.row.id, val, 'visible')"
-            />
+            <span v-if="scope.row.sex === 0"> 男</span>
+            <span v-if="scope.row.sex === 1"> 女</span>
+            <span v-if="scope.row.sex === 2"> 保密</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="role_names" label="角色" min-width="100px">
+          <template v-slot="scope">
+            {{ formatRole(scope.row.role_ids) }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" min-width="70px">
@@ -56,40 +56,56 @@
             {{ scope.row.status === 1 ? '禁用' : '启用' }}
           </template>
         </el-table-column>
+        <el-table-column prop="login_date" label="最后登陆时间" min-width="100px">
+          <template v-slot="scope">
+            {{ onFormat(scope.row.update_time) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="update_time" label="更新时间" min-width="100px">
           <template v-slot="scope">
             {{ onFormat(scope.row.update_time) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="100px" />
+        <el-table-column label="操作" min-width="100px">
+          <template v-slot="scope">
+            <el-button type="text" @click="onEdit(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </template>
     <template #bottom>
       <Pagination :total="total" v-model:page="listPage.page" v-model:pageSize="listPage.pageSize" @pagination="loadData" />
     </template>
   </ListModel>
+
+  <Edit ref="refEdit" @onSure="loadData" />
 </template>
 
 <script>
 import { dateFormat } from '@/utils/date'
-import { arrayToTree } from '@/utils/array'
-import { onMounted, reactive, toRefs } from 'vue'
-import { getMenuList, updateMenu } from '@/api'
+import { onMounted, reactive, toRefs, ref } from 'vue'
+import * as api from '@/api'
 import Toolbar from '@/components/Toolbar'
 import ListModel from '@/components/ListModel'
 import Pagination from '@/components/Pagination'
 import { ElMessage } from 'element-plus'
+import { formatMobile } from '@/utils/format'
+import Edit from './edit.vue'
 export default {
   components: {
     Toolbar,
     ListModel,
-    Pagination
+    Pagination,
+    Edit
   },
+
   setup() {
+    const refEdit = ref(null)
     const state = reactive({
       height: document.body.clientHeight - 160,
       tableData: [],
-      total: 34,
+      roleList: [],
+      total: 0,
       params: {},
       listPage: {
         page: 1,
@@ -98,6 +114,10 @@ export default {
     })
     onMounted(() => {
       loadData()
+
+      api.getRoleList({ status: 0 }).then((res) => {
+        state.roleList = res.data.list
+      })
     })
 
     const loadData = () => {
@@ -107,20 +127,31 @@ export default {
         p.endDate = p.time[1]
         delete p.time
       }
-      getMenuList(p).then((res) => {
+      api.getUersList(p).then((res) => {
         const data = res.data || []
-        state.total = data.length
-        data.forEach((item) => {
-          //处理数据
-          item.value = item.id
-          item.key = item.id
-          item.title = item.name
-        })
-        state.tableData = arrayToTree(data, 0, 'id', 'parent_id')
+        state.tableData = data.list
+        state.total = data.total
       })
+    }
+    const formatRole = (str = '') => {
+      if (!str) {
+        return
+      }
+      console.log('str:', str)
+      const arrId = str.split(',')
+      console.log('rearrIds:', arrId)
+      if (arrId.length) {
+        const arrText = state.roleList.filter((item) => arrId.includes(item.id + ''))
+        console.log('arrText:', arrText)
+        return arrText.map((item) => item.name).join(',')
+      }
     }
 
     const onFormat = (val) => (val ? dateFormat(new Date(val), 'YYYY-mm-DD hh:MM:ss') : '')
+    const onEdit = (row) => {
+      console.log('row:', row)
+      refEdit.value.onShow(row)
+    }
 
     const onChangeVisible = (id, value, field) => {
       if (id) {
@@ -128,8 +159,10 @@ export default {
         const params = {
           [field]: val
         }
-        updateMenu(id, params)
-          .then(() => {
+        api
+          .updateMenu(id, params)
+          .then((res) => {
+            console.log('res:', res)
             ElMessage.success('更新成功')
           })
           .catch(() => {
@@ -139,9 +172,13 @@ export default {
     }
     return {
       ...toRefs(state),
+      refEdit,
       loadData,
       onFormat,
-      onChangeVisible
+      onEdit,
+      onChangeVisible,
+      formatRole,
+      formatMobile
     }
   }
 }

@@ -77,6 +77,24 @@ const routes: Array<RouteRecordRaw> = [
         name: 'menu',
         component: () => import(/* webpackChunkName: "layout" */ '@/views/system/menu/index.vue'),
         meta: { title: '菜单管理', icon: 'menu-icon1', noCache: true, affix: true }
+      },
+      {
+        path: '/role',
+        name: 'role',
+        component: () => import(/* webpackChunkName: "layout" */ '@/views/system/role/index.vue'),
+        meta: { title: '角色管理', icon: 'menu-icon1', noCache: true, affix: true }
+      },
+      {
+        path: '/user',
+        name: 'user',
+        component: () => import(/* webpackChunkName: "layout" */ '@/views/system/user/index.vue'),
+        meta: { title: '用户管理', icon: 'menu-icon1', noCache: true, affix: true }
+      },
+      {
+        path: '/dict',
+        name: 'dict',
+        component: () => import(/* webpackChunkName: "layout" */ '@/views/system/dict/index.vue'),
+        meta: { title: '字典管理', icon: 'menu-icon1', noCache: true, affix: true }
       }
     ]
   }

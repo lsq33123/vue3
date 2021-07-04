@@ -4,6 +4,8 @@ import './registerServiceWorker'
 // import router from './router'
 import { setupRouter } from './router'
 import store from './store'
+import {setRem}from './postFlex'
+setRem() //响应式布局
 // import { createRouterGuards } from './permission'
 
 import ElementPlus from 'element-plus'

@@ -129,7 +129,8 @@ export default {
           [field]: val
         }
         updateMenu(id, params)
-          .then(() => {
+          .then((res) => {
+            console.log('res:', res)
             ElMessage.success('更新成功')
           })
           .catch(() => {
